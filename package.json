@@ -1,0 +1,14 @@
+{
+  "name": "mediawiki-discord-bot",
+  "version": "1.0.0",
+  "description": "Allows for easier communication about MediaWiki projects on discord.",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Chris Struck",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.14.1"
+  }
+}
