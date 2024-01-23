@@ -1,10 +1,11 @@
 // Node Modules
 const discord = require('discord.js');
 
-
 // Local Files
 const config = require("./config.json");
 
+
+// Interwiki prefix codes with their respective urls
 const wikiPrefixCodes = {
 	"w": "https://en.wikipedia.org/wiki/",				// Wikipedia
 	"mw": "https://www.mediawiki.org/wiki/",			// MediaWiki
@@ -12,16 +13,22 @@ const wikiPrefixCodes = {
 	"meta": "https://meta.miraheze.org/wiki/"			// Miraheze Meta Wiki
 };
 
-
+// Array of Gateway Intents
+const GatewayIntentList = [
+	discord.GatewayIntentBits.Guilds,
+	discord.GatewayIntentBits.GuildMessages,
+	discord.GatewayIntentBits.MessageContent
+];
 
 // import { Client, GatewayIntentBits } from 'discord.js';
-const client = new discord.Client({ intents: [discord.GatewayIntentBits.Guilds, discord.GatewayIntentBits.GuildMessages, discord.GatewayIntentBits.MessageContent] });
+const client = new discord.Client({ intents: GatewayIntentList });
 // const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
+//this is some boilerplate stuff, will come back to it after its all done
 client.on('interactionCreate', async interaction => {
   if (!interaction.isChatInputCommand()) return;
 
@@ -44,14 +51,14 @@ client.on('messageCreate', async (message) => {
 
 	// This *should* work, might need to change to just the 'content' but that requires more gateway intentions with manual approval
 	let msg = message.cleanContent;
+
+	let links = msg.match(/\[\[[\w| |#|:]*\]\]/g);		// Matches wikitext syntax with basic filtering out bad page names
+	
 	console.log(`Message: ${msg}`);
-	// Matches wikitext syntax with basic filtering out bad page names
-	let links = msg.match(/\[\[[\w| |#|:]*\]\]/g);
+	console.log(`Links Array: ${links}`);
 
 	// No matches found
 	if (links == null) return;
-
-	console.log(`Links Array: ${links}`);
 
 
 //	/** 
@@ -62,7 +69,14 @@ client.on('messageCreate', async (message) => {
 		// Checks to see if the element contains an interwiki prefix
 
 		let [interwikiPrefix, articleTitle] = (e) => {
+			if (e.includes(':')) {
+				let subStrs = e.split(':');
 
+				
+			}
+			else {
+				return [false, e];
+			}
 		};
 
 
