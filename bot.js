@@ -52,7 +52,7 @@ client.on('messageCreate', async (message) => {
 	// This *should* work, might need to change to just the 'content' but that requires more gateway intentions with manual approval
 	let msg = message.cleanContent;
 
-	let links = msg.match(/\[\[[\w| |#|:]*\]\]/g);		// Matches wikitext syntax with basic filtering out bad page names
+	let links = msg.match(/\[\[[\w #:]+\]\]/g);		// Matches wikitext syntax with basic filtering out bad page names
 	
 	console.log(`Message: ${msg}`);
 	console.log(`Links Array: ${links}`);
@@ -63,31 +63,37 @@ client.on('messageCreate', async (message) => {
 
 //	/** 
 	// Loops through each match to reply with the link
-	links.forEach((e) => {
+	links.forEach((link) => {
 		//send reply with link
 
 		// Checks to see if the element contains an interwiki prefix
 
-		let [interwikiPrefix, articleTitle] = (e) => {
-			if (e.includes(':')) {
-				let subStrs = e.split(':');
+		let [interwikiPrefix, articleTitle] = (link) => {
+			if (link.includes(':')) {
+				let prefix = false;
 
+				Object.keys(wikiPrefixCodes).forEach( (interwikicode) => {
+					if (link.includes(interwikicode + ':')) {
+						prefix = interwikicode;
+						return;
+					}
+				});
 				
 			}
 			else {
-				return [false, e];
+				return [false, link];
 			}
 		};
 
 
-		if (e.includes(':')) {
-			let [interwikiPrefix, articleTitle] = e.split(':');
-		}
-		else {
-			let interwikiPrefix = false, articleTitle = e;
-		}
+		// if (e.includes(':')) {
+		// 	let [interwikiPrefix, articleTitle] = e.split(':');
+		// }
+		// else {
+		// 	let interwikiPrefix = false, articleTitle = e;
+		// }
 		
-		articleTitle = articleTitle.replace(/\[|\]/g, r => chars[r]);
+		articleTitle = articleTitle.replace(/[\[\] ]/g, r => chars[r]);		// Formats the article name as url styling
 		// let link = 	
 	});
 //*/
