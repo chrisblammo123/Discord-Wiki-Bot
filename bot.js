@@ -64,17 +64,17 @@ client.on('messageCreate', async (message) => {
 //	/** 
 	// Loops through each match to reply with the link
 	links.forEach((link) => {
-		//send reply with link
-
 		// Checks to see if the element contains an interwiki prefix
-
 		let [interwikiPrefix, articleTitle] = (link) => {
 			if (link.includes(':')) {
 				let prefix = false;
+				let title = null;
 
 				Object.keys(wikiPrefixCodes).forEach( (interwikicode) => {
 					if (link.includes(interwikicode + ':')) {
 						prefix = interwikicode;
+						
+						title = link.replace(interwikicode + ':', '');
 						return;
 					}
 				});
