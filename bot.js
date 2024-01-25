@@ -24,6 +24,35 @@ const GatewayIntentList = [
 const client = new discord.Client({ intents: GatewayIntentList });
 // const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
+const findInterwikiCode = (link) => {
+	let prefix = false;
+	let title = link;
+	// if (link.includes(':')) {
+
+		Object.keys(wikiPrefixCodes).forEach( (interwikicode) => {
+			if (link.indexOf(interwikicode + ':') == 0) {
+				prefix = interwikicode;
+				
+				title = link.replace(interwikicode + ':', '');
+				return;
+			}
+		});
+		
+	// }
+	// else {
+	// 	return [false, link];
+	// }
+
+	return [prefix, title];
+};
+
+
+
+
+
+
+
+
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
@@ -65,25 +94,29 @@ client.on('messageCreate', async (message) => {
 	// Loops through each match to reply with the link
 	links.forEach((link) => {
 		// Checks to see if the element contains an interwiki prefix
-		let [interwikiPrefix, articleTitle] = (link) => {
-			if (link.includes(':')) {
-				let prefix = false;
-				let title = null;
 
-				Object.keys(wikiPrefixCodes).forEach( (interwikicode) => {
-					if (link.includes(interwikicode + ':')) {
-						prefix = interwikicode;
+		let [interwikiPrefix, articleTitle] = findInterwikiCode(link);
+
+
+		// let [interwikiPrefix, articleTitle] = (link) => {
+			// if (link.includes(':')) {
+			// 	let prefix = false;
+			// 	let title = null;
+
+			// 	Object.keys(wikiPrefixCodes).forEach( (interwikicode) => {
+			// 		if (link.includes(interwikicode + ':')) {
+			// 			prefix = interwikicode;
 						
-						title = link.replace(interwikicode + ':', '');
-						return;
-					}
-				});
+			// 			title = link.replace(interwikicode + ':', '');
+			// 			return;
+			// 		}
+			// 	});
 				
-			}
-			else {
-				return [false, link];
-			}
-		};
+			// }
+			// else {
+			// 	return [false, link];
+			// }
+		// };
 
 
 		// if (e.includes(':')) {
