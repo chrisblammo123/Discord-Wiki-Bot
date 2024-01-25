@@ -3,7 +3,10 @@ const discord = require('discord.js');
 
 // Local Files
 const config = require("./config.json");
+//TODO: Possibly add a prefs.json or similar to allow for adding settings.
 
+
+// Global Variables
 
 // Interwiki prefix codes with their respective urls
 const wikiPrefixCodes = {
@@ -20,44 +23,43 @@ const GatewayIntentList = [
 	discord.GatewayIntentBits.MessageContent
 ];
 
-// import { Client, GatewayIntentBits } from 'discord.js';
+// Creates the discord.js client to listen for events
 const client = new discord.Client({ intents: GatewayIntentList });
-// const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
+
+// Global Functions
+
+// Checks the message string for reasonable interwiki codes, returns false if none are found
 const findInterwikiCode = (link) => {
 	let prefix = false;
 	let title = link;
-	// if (link.includes(':')) {
 
-		Object.keys(wikiPrefixCodes).forEach( (interwikicode) => {
-			if (link.indexOf(interwikicode + ':') == 2) {
-				prefix = interwikicode;
-				
-				title = link.replace(interwikicode + ':', '');
-				return;
-			}
-		});
-		
-	// }
-	// else {
-	// 	return [false, link];
-	// }
+	// Iterates through the list of interwiki codes
+	Object.keys(wikiPrefixCodes).forEach( (interwikicode) => {
+		// Checks to see if the wiki code is contained in the message string, and makes sure it is at the start (after the two brackets)
+		if (link.indexOf(interwikicode + ':') == 2) {
+			prefix = interwikicode;
+			title = link.replace(interwikicode + ':', '');
+			
+			return;
+		}
+	});
 
 	return [prefix, title];
 };
 
 
+// Event Listeners
 
-
-
-
-
-
+// Emitted on bot startup
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
+
 //this is some boilerplate stuff, will come back to it after its all done
+
+// Emitted on slash command usage
 client.on('interactionCreate', async interaction => {
   if (!interaction.isChatInputCommand()) return;
 
@@ -67,19 +69,23 @@ client.on('interactionCreate', async interaction => {
 });
 
 
+//on message create, look for '[[' and ']]' chars, isolate text between square brackets, respond with link
+
+// Emitted on a message being sent
 client.on('messageCreate', async (message) => {
 	// Filters out bot messages
 	if (message.author.bot) return;
 
 	// Replacement characters
+	// Is there a reason to have this here instead of with the other vars???
 	const chars = {
 		' ': '_',
 		'[': '',
 		']': ''
 	};
 
-	// This *should* work, might need to change to just the 'content' but that requires more gateway intentions with manual approval
-	let msg = message.cleanContent;
+
+	let msg = message.cleanContent;					// Isolates the message string itself from the message metadata
 
 	let links = msg.match(/\[\[[\w #:]+\]\]/g);		// Matches wikitext syntax with basic filtering out bad page names
 	
@@ -87,54 +93,23 @@ client.on('messageCreate', async (message) => {
 	console.log(`Links Array: ${links}`);
 
 	// No matches found
-	if (links == null) return;
+	if (links == null) return;						// Returns if there are no matches found
 
-
-//	/** 
+	
 	// Loops through each match to reply with the link
 	links.forEach((link) => {
 		// Checks to see if the element contains an interwiki prefix
 
 		let [interwikiPrefix, articleTitle] = findInterwikiCode(link);
-console.log(`interwiki prefix: ${interwikiPrefix}\narticle title: ${articleTitle}`);
-
-		// let [interwikiPrefix, articleTitle] = (link) => {
-			// if (link.includes(':')) {
-			// 	let prefix = false;
-			// 	let title = null;
-
-			// 	Object.keys(wikiPrefixCodes).forEach( (interwikicode) => {
-			// 		if (link.includes(interwikicode + ':')) {
-			// 			prefix = interwikicode;
-						
-			// 			title = link.replace(interwikicode + ':', '');
-			// 			return;
-			// 		}
-			// 	});
-				
-			// }
-			// else {
-			// 	return [false, link];
-			// }
-		// };
-
-
-		// if (e.includes(':')) {
-		// 	let [interwikiPrefix, articleTitle] = e.split(':');
-		// }
-		// else {
-		// 	let interwikiPrefix = false, articleTitle = e;
-		// }
 		
-		articleTitle = articleTitle.replace(/[\[\] ]/g, r => chars[r]);		// Formats the article name as url styling
-		// let link = 	
+		console.log(`interwiki prefix: ${interwikiPrefix}\narticle title: ${articleTitle}`);
+		
+		articleTitle = articleTitle.replace(/[\[\] ]/g, r => chars[r]);		// Formats the article name into url styling
 	});
-//*/
 
 
 });
 
-//on message create, look for '[[' and ']]' chars, isolate text between square brackets, respond with link
 
 
 
