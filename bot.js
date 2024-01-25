@@ -30,7 +30,7 @@ const findInterwikiCode = (link) => {
 	// if (link.includes(':')) {
 
 		Object.keys(wikiPrefixCodes).forEach( (interwikicode) => {
-			if (link.indexOf(interwikicode + ':') == 0) {
+			if (link.indexOf(interwikicode + ':') == 2) {
 				prefix = interwikicode;
 				
 				title = link.replace(interwikicode + ':', '');
@@ -96,7 +96,7 @@ client.on('messageCreate', async (message) => {
 		// Checks to see if the element contains an interwiki prefix
 
 		let [interwikiPrefix, articleTitle] = findInterwikiCode(link);
-
+console.log(`interwiki prefix: ${interwikiPrefix}\narticle title: ${articleTitle}`);
 
 		// let [interwikiPrefix, articleTitle] = (link) => {
 			// if (link.includes(':')) {
