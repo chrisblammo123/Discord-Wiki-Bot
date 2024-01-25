@@ -13,7 +13,8 @@ const wikiPrefixCodes = {
 	"w": "https://en.wikipedia.org/wiki/",				// Wikipedia
 	"mw": "https://www.mediawiki.org/wiki/",			// MediaWiki
 	"phab": "https://phabricator.miraheze.org/",		// Miraheze Phabricator
-	"meta": "https://meta.miraheze.org/wiki/"			// Miraheze Meta Wiki
+	"meta": "https://meta.miraheze.org/wiki/",			// Miraheze Meta Wiki
+	false: "https://lethal.miraheze.org/wiki/"			// Lethal Company Wiki
 };
 
 // Array of Gateway Intents
@@ -105,6 +106,12 @@ client.on('messageCreate', async (message) => {
 		console.log(`interwiki prefix: ${interwikiPrefix}\narticle title: ${articleTitle}`);
 		
 		articleTitle = articleTitle.replace(/[\[\] ]/g, r => chars[r]);		// Formats the article name into url styling
+		console.log(articleTitle);
+
+		// Combines the full wiki URL (default stored here for now) and converts the page name to a PascalCase-esque format
+		page = wikiPrefixCodes[interwikiPrefix] + articleTitle.replace(/^[a-z]|:[a-z]/g, c => c.toUpperCase());
+
+		console.log(page);
 	});
 
 
