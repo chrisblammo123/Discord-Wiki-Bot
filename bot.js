@@ -76,6 +76,8 @@ client.on('interactionCreate', async interaction => {
 client.on('messageCreate', async (message) => {
 	// Filters out bot messages
 	if (message.author.bot) return;
+	
+	console.log(message);
 
 	// Replacement characters
 	// Is there a reason to have this here instead of with the other vars???
@@ -87,6 +89,7 @@ client.on('messageCreate', async (message) => {
 
 
 	let msg = message.cleanContent;					// Isolates the message string itself from the message metadata
+
 
 	let links = msg.match(/\[\[[\w #:]+\]\]/g);		// Matches wikitext syntax with basic filtering out bad page names
 	
@@ -112,6 +115,13 @@ client.on('messageCreate', async (message) => {
 		page = wikiPrefixCodes[interwikiPrefix] + articleTitle.replace(/^[a-z]|:[a-z]/g, c => c.toUpperCase());
 
 		console.log(page);
+		
+
+		// Reply to message
+
+		message.channel.send(page)
+			.then(message => console.log(`Sent message: ${message.content}`))
+			.catch(console.error);
 	});
 
 
