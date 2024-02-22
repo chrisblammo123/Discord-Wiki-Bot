@@ -1,5 +1,10 @@
+// this link might be correct?
+// https://discord.com/api/oauth2/authorize?client_id=1200729608136425493&permissions=277025475584&scope=bot
+console.log(process.cwd())
 // Node Modules
 const discord = require('discord.js');
+// const logging = require('winston');			//might not use this
+const fs = require('fs');					// Only will be used for manual logging, will probably remove it if using winston
 
 // Local Files
 const config = require("./config.json");
@@ -23,6 +28,21 @@ const GatewayIntentList = [
 	discord.GatewayIntentBits.GuildMessages,
 	discord.GatewayIntentBits.MessageContent
 ];
+
+// Date + logging variables
+const date = new Date;
+const betterDate = (date) => { return `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}` };
+const logFile = 'logs/' + betterDate(date) + '.log.';
+
+if (!fs.existsSync('logs/')) {
+	console.log('folder doesnt exist, creating');
+	fs.mkdir('logs/', (err) => {
+		if (err) throw err;
+	});
+}
+
+// fs.access('/logs/', () => {});
+
 
 // Creates the discord.js client to listen for events
 const client = new discord.Client({ intents: GatewayIntentList });
@@ -50,11 +70,27 @@ const findInterwikiCode = (link) => {
 };
 
 
+// Sets up manual logger with fs
+const writeLog = (logData, logType = 'INFO') => {
+	// fs.writeFile() instead maybe???
+	fs.appendFile(logFile, `${logType}: ${logData}`, (err) => {
+		if (err) throw err;
+		console.log('appended data to log: ' + logData);
+	});
+};
+
+
+
+// Execution Start (Probably)
+
+writeLog('Startup @ ' + new Date().toString(), 'INFO');
+
 // Event Listeners
 
 // Emitted on bot startup
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+	console.log(`Logged in as ${client.user.tag}!`);
+	writeLog('Logged In to Bot', 'INFO');
 });
 
 
@@ -62,11 +98,11 @@ client.on('ready', () => {
 
 // Emitted on slash command usage
 client.on('interactionCreate', async interaction => {
-  if (!interaction.isChatInputCommand()) return;
+	if (!interaction.isChatInputCommand()) return;
 
-  if (interaction.commandName === 'ping') {
-    await interaction.reply('Pong!');
-  }
+	if (interaction.commandName === 'ping') {
+		await interaction.reply('Pong!');
+	}
 });
 
 
