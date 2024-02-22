@@ -32,7 +32,7 @@ const GatewayIntentList = [
 // Date + logging variables
 const date = new Date;
 const betterDate = (date) => { return `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}` };
-const logFile = 'logs/' + betterDate(date) + '.log.';
+const logFile = 'logs/' + betterDate(date) + '.log';
 
 if (!fs.existsSync('logs/')) {
 	console.log('folder doesnt exist, creating');
@@ -73,7 +73,7 @@ const findInterwikiCode = (link) => {
 // Sets up manual logger with fs
 const writeLog = (logData, logType = 'INFO') => {
 	// fs.writeFile() instead maybe???
-	fs.appendFile(logFile, `${logType}: ${logData}`, (err) => {
+	fs.appendFile(logFile, `${logType}: ${logData}\n`, (err) => {
 		if (err) throw err;
 		console.log('appended data to log: ' + logData);
 	});
