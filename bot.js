@@ -1,6 +1,6 @@
 // this link might be correct?
 // https://discord.com/api/oauth2/authorize?client_id=1200729608136425493&permissions=277025475584&scope=bot
-console.log(process.cwd())
+
 // Node Modules
 const discord = require('discord.js');
 // const logging = require('winston');			//might not use this
@@ -11,7 +11,7 @@ const config = require("./config.json");
 //TODO: Possibly add a prefs.json or similar to allow for adding settings.
 
 
-// Global Variables
+// Global Variables and Functions
 
 // Interwiki prefix codes with their respective urls
 const wikiPrefixCodes = {
@@ -29,6 +29,9 @@ const GatewayIntentList = [
 	discord.GatewayIntentBits.MessageContent
 ];
 
+// Creates the discord.js client to listen for events
+const client = new discord.Client({ intents: GatewayIntentList });
+
 // Date + logging variables
 const date = new Date;
 const betterDate = (date) => { return `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}` };
@@ -41,14 +44,14 @@ if (!fs.existsSync('logs/')) {
 	});
 }
 
-// fs.access('/logs/', () => {});
-
-
-// Creates the discord.js client to listen for events
-const client = new discord.Client({ intents: GatewayIntentList });
-
-
-// Global Functions
+// Sets up manual logger with fs
+const writeLog = (logData, logType = 'INFO') => {
+	// fs.writeFile() instead maybe???
+	fs.appendFile(logFile, `${Date().toTimeString().slice(0,8)} ${logType}: ${logData}\n`, (err) => {		// need to look into changing this to a writable stream, also try catching it here for error stuff
+		if (err) throw err;			// maybe replace this with just its own error handling, seems like that could be the best method
+		console.log('appended data to log: ' + logData);
+	});
+};
 
 // Checks the message string for reasonable interwiki codes, returns false if none are found
 const findInterwikiCode = (link) => {
@@ -69,15 +72,16 @@ const findInterwikiCode = (link) => {
 	return [prefix, title];
 };
 
+// Last line of defense if a fatal error occurs, tries to print error to log before exiting
+process.on('uncaughtException', (err, origin) => {
+	writeLog('uncaughtException, exiting with code 9', 'FATAL ERROR');
+	writeLog(`Caught exception: ${err}\n`, 'FATAL ERROR');
+	writeLog(`Exception origin: ${origin}`, 'FATAL ERROR');
 
-// Sets up manual logger with fs
-const writeLog = (logData, logType = 'INFO') => {
-	// fs.writeFile() instead maybe???
-	fs.appendFile(logFile, `${logType}: ${logData}\n`, (err) => {
-		if (err) throw err;
-		console.log('appended data to log: ' + logData);
-	});
-};
+	// Sets exit code to 9
+	process.exitCode = 9;
+});
+
 
 
 
