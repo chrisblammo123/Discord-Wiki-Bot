@@ -47,7 +47,7 @@ if (!fs.existsSync('logs/')) {
 // Sets up manual logger with fs
 const writeLog = (logData, logType = 'INFO') => {
 	// fs.writeFile() instead maybe???
-	fs.appendFile(logFile, `${Date().toTimeString().slice(0,8)} ${logType}: ${logData}\n`, (err) => {		// need to look into changing this to a writable stream, also try catching it here for error stuff
+	fs.appendFile(logFile, `${new Date().toTimeString().slice(0,8)} ${logType}: ${logData}\n`, (err) => {		// need to look into changing this to a writable stream, also try catching it here for error stuff
 		if (err) throw err;			// maybe replace this with just its own error handling, seems like that could be the best method
 		console.log('appended data to log: ' + logData);
 	});
@@ -82,8 +82,23 @@ process.on('uncaughtException', (err, origin) => {
 	process.exitCode = 9;
 });
 
+// Prints exit code, might remove this but want to test it out
+// also doesnt work but im pretty sure its just because it doesnt have enough time
+// also this is stupid whjy would i  need this its 5 am my brain is melting i spent an hour trying to make this shit work when there is no god damn reason for it to exist
+process.on('exit', (code) => {
+	writeLog(`About to exit with code: ${code}`, 'INFO');
+	setTimeout(() => {
+		console.log('bye');
+	}, 2000)
+  });
 
-
+  // this is stupid, why would I need this when the only time it will happen is when I stop the program myself?!!?!? also it breaks it in a very interesting way
+  // keeping it to test to make sure it catches the silly errors later
+//   process.on('SIGINT', (code) => {
+// 	writeLog(`About to exit with code 2 [${code}]`, 'INFO');
+// 	process.exitCode = 2;
+// 	process.exit()
+//   });
 
 // Execution Start (Probably)
 
