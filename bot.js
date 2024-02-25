@@ -3,7 +3,6 @@
 
 // Node Modules
 const discord = require('discord.js');
-// const logging = require('winston');			//might not use this
 const fs = require('fs');					// Only will be used for manual logging, will probably remove it if using winston
 
 // Local Files
@@ -37,18 +36,28 @@ const date = new Date;
 const betterDate = (date) => { return `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}` };
 const logFile = 'logs/' + betterDate(date) + '.log';
 
+// Create logs folder if it does not exist
 if (!fs.existsSync('logs/')) {
 	console.log('folder doesnt exist, creating');
 	fs.mkdir('logs/', (err) => {
-		if (err) throw err;
+		if (err) {
+			console.log(`Create Log Folder Error: ${err}`);
+			//handle error
+		}
+		// if (err) throw err;
 	});
 }
 
 // Sets up manual logger with fs
 const writeLog = (logData, logType = 'INFO') => {
 	// fs.writeFile() instead maybe???
-	fs.appendFile(logFile, `${new Date().toTimeString().slice(0,8)} ${logType}: ${logData}\n`, (err) => {		// need to look into changing this to a writable stream, also try catching it here for error stuff
-		if (err) throw err;			// maybe replace this with just its own error handling, seems like that could be the best method
+	// need to look into changing this to a writable stream, also try catching it here for error stuff
+	fs.appendFile(logFile, `${new Date().toTimeString().slice(0,8)} ${logType}: ${logData}\n`, (err) => {
+		if (err) {
+			console.log(`Append File Error: ${err}`);
+			//handle error
+		}
+		// if (err) throw err;			// maybe replace this with just its own error handling, seems like that could be the best method
 		console.log('appended data to log: ' + logData);
 	});
 };
