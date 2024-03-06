@@ -58,9 +58,10 @@ if (!fs.existsSync('logs/')) {
 
 // Sets up manual logger with fs
 /**
- * Prints out a string to the log file, marked as a specific log type
- * @param {string} logData String of data to be printed to the log
- * @param {LogTypes} logType The severity level or type log
+ * Prints out a string to the log file, marked as a specific log type.
+ * @function writeLog
+ * @param {string} logData String of data to be printed to the log.
+ * @param {LogTypes} logType The severity level or type log.
  */
 const writeLog = (logData, logType = 'INFO') => {
 	// fs.writeFile() instead maybe???
@@ -77,13 +78,14 @@ const writeLog = (logData, logType = 'INFO') => {
 
 // Checks the message string for reasonable interwiki codes, returns false if none are found
 /**
- * Searches a given link for valid interwiki codes
- * @param {string} link The link to be searched
- * @returns {[string, string]} 
+ * Searches a given link for valid interwiki codes.
+ * @function findInterwikiCode
+ * @param {string} link The link to be searched.
+ * @returns {[string|false, string]} Pair of values that includes the prefix string if it exists, or false if it does not, and the article title.
  */
 const findInterwikiCode = (link) => {
-	let prefix = false;
-	let title = link;
+	let prefix = false;			// defaults to false
+	let title = link;			//defaults to the link, since no interwiki code just results in the actual title
 
 	// Iterates through the list of interwiki codes
 	Object.keys(wikiPrefixCodes).forEach( (interwikicode) => {
@@ -100,6 +102,19 @@ const findInterwikiCode = (link) => {
 };
 
 // Last line of defense if a fatal error occurs, tries to print error to log before exiting
+
+/**
+ * Callback function that handles uncaught exceptions.
+ * @callback handleFatalError
+ * @param {string} err The text of the error.
+ * @param {string} origin Location/origin of the error.
+ */
+
+/**
+ * Event listener that catches fatal errors, logs them, then allows the program to exit with code 9.
+ * @listens process:uncaughtException
+ * @param {handleFatalError}
+ */
 process.on('uncaughtException', (err, origin) => {
 	writeLog('uncaughtException, exiting with code 9', 'FATAL ERROR');
 	writeLog(`Caught exception: ${err}\n`, 'FATAL ERROR');
